@@ -4,6 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+TIPOS:
+ 0 - IDOSO
+ 1 - CUIDADOR
+ 2 - SENSOR
+*/
+#define IDOSO 0
+#define CUIDADOR 0
+#define SENSOR 0
+
 typedef struct celula Celula;
 typedef struct lista Lista;
 

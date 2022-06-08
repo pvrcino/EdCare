@@ -1,4 +1,4 @@
-#include "LHSES.h"
+#include "lhses.h"
 
 struct celula{
     int tipo;
@@ -40,7 +40,7 @@ void insereElemento(Lista* lista, void*item, int tipo) {
 	
     lista->ultimo = celula;
 
-    if (lista->primeiro == NULL) {
+    if (!lista->primeiro) {
         lista->primeiro = celula;
     }
 }

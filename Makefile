@@ -6,7 +6,7 @@ CC_FLAGS=-c         \
          -ansi      \
          -pedantic
 
-SRC = src/LHSES.c src/edcare.c
+SRC = src/sensor.c src/cuidador.c src/idoso.c src/LHSES.c src/edcare.c
 
 edcare: $(SRC)
 	$(CC) -o $@ $^ $(CFLAGS)
