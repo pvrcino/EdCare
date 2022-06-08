@@ -32,5 +32,6 @@ void liberaIdoso(Idoso* idoso) {
     free(idoso->nome);
     liberaLista(idoso->amigos);
     liberaLista(idoso->cuidadores);
+    listaCallback(idoso->sensores, liberaSensor);
     liberaLista(idoso->sensores);
 }

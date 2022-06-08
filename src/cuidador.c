@@ -14,3 +14,9 @@ Cuidador* criaCuidador(char* nome){
 void adicionaSensorCuidador(Cuidador* cuidador, Sensor* sensor){
     insereElemento(cuidador->sensores, sensor, CUIDADOR);
 }
+
+void liberaCuidador(Cuidador* cuidador) {
+    free(cuidador->nome);
+    listaCallback(cuidador->sensores, liberaSensor);
+    liberaLista(cuidador->sensores);
+}

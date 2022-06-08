@@ -6,5 +6,6 @@
 
 typedef struct sensor Sensor;
 
+void liberaSensor(Sensor *sensor);
 
 #endif

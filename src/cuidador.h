@@ -11,4 +11,6 @@ Cuidador* criaCuidador(char* nome);
 
 void adicionaSensorCuidador(Cuidador* cuidador, Sensor* sensor);
 
+void liberaCuidador(Cuidador* cuidador);
+
 #endif
