@@ -15,10 +15,6 @@ Idoso* criaIdoso(char* nome){
     idoso->sensores = criaLista();
 }
 
-void imprimeNome(Idoso* idoso){
-    printf(idoso->nome);
-}
-
 void adicionaAmigo(Idoso* idoso1, Idoso* idoso2){
     insereElemento(idoso1->amigos, idoso2, IDOSO);
     insereElemento(idoso2->amigos, idoso1, IDOSO);

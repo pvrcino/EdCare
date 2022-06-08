@@ -2,6 +2,7 @@
 #define CUIDADOR_H_
 
 #include <stdio.h>
+#include <string.h>
 #include "sensor.h"
 
 typedef struct cuidador Cuidador;
