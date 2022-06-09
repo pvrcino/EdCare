@@ -28,6 +28,18 @@ void listaCallback(Lista* lista, void (*callback)(void *)){
     }
 }
 
+void* buscaCallback(Lista* lista, int (*callback)(void *, char*), char* chave) {
+    Celula* celula = lista->primeiro;
+    while (celula != NULL) {
+        Celula* prox = celula->prox;
+        if (callback(celula->item, chave)) {
+            return celula->item;
+        }
+        celula = prox;
+    }
+    return NULL;
+}
+
 void insereElemento(Lista* lista, void*item, int tipo) {
     Celula* celula = malloc(sizeof(Celula));
     celula->item = item;

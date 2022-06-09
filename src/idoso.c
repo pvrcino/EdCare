@@ -15,6 +15,30 @@ Idoso* criaIdoso(char* nome){
     idoso->sensores = criaLista();
 }
 
+Lista* getAmigos(Idoso* idoso){
+    return idoso->amigos;
+}
+
+
+int verificaNomeIdoso(Idoso* idoso, char* nome) {
+    if (strcmp(idoso->nome,nome) == 0){
+        return 1;
+    }
+    return 0;
+}
+
+char* getNome(Idoso* idoso){
+    return idoso->nome;
+}
+
+Lista* getCuidadores(Idoso* idoso){
+    return idoso->cuidadores;
+}
+
+void imprimeIdoso(Idoso* idoso){
+    printf("%s\n", idoso->nome);
+}
+
 void adicionaAmigo(Idoso* idoso1, Idoso* idoso2){
     insereElemento(idoso1->amigos, idoso2, IDOSO);
     insereElemento(idoso2->amigos, idoso1, IDOSO);
@@ -26,6 +50,26 @@ void adicionaCuidador(Idoso* idoso, Cuidador* cuidador){
 
 void adicionaSensorIdoso(Idoso* idoso, Sensor* sensor){
     insereElemento(idoso->sensores, sensor, SENSOR);
+}
+
+void extraiSensorIdoso(Idoso* idoso){
+    char aux[1024];
+    float temperatua_aux = 0.0f;
+    float latitude_aux = 0.0f;
+    float longitude_aux = 0.0f;
+    int queda_aux = 0.0f;
+
+    strcat(strcpy(aux, idoso->nome), ".txt");
+    FILE *file = fopen(aux,"r");
+
+    if (file == NULL) {
+        return;
+    }
+    while (fscanf(file, "%f;%f;%f;%d", &temperatua_aux, &latitude_aux, &longitude_aux, &queda_aux) != EOF){
+        printf("%f\n", temperatua_aux);
+        Sensor* sensor = criaSensor(temperatua_aux,latitude_aux,longitude_aux,queda_aux);
+        adicionaSensorIdoso(idoso, sensor);
+    }
 }
 
 void liberaIdoso(Idoso* idoso) {

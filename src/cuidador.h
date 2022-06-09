@@ -11,6 +11,10 @@ Cuidador* criaCuidador(char* nome);
 
 void adicionaSensorCuidador(Cuidador* cuidador, Sensor* sensor);
 
+void imprimeCuidador(Cuidador* cuidador);
+
+int verificaNomeCuidador(Cuidador* cuidador, char* nome);
+
 void liberaCuidador(Cuidador* cuidador);
 
 #endif
