@@ -5,6 +5,7 @@ struct sensor {
     float latitude;
     float longitude;
     int queda;
+    int faleceu;
 };
 
 Sensor* criaSensor(float temp, float latitude, float longitude, int queda){
@@ -27,6 +28,9 @@ float getLongitude(Sensor* sensor){
 }
 float getQueda(Sensor* sensor){
     return sensor->queda;
+}
+int isMorto(Sensor* sensor){
+    return sensor->faleceu;
 }
 
 void liberaSensor(Sensor * sensor){

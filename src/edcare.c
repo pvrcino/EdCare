@@ -13,10 +13,7 @@ int main(int argc, char *argv[]){
     Lista* idosos = constroiListaApoio();
     Lista* cuidadores = constroiListaCuidadores(idosos);
     listaCallback(idosos,extraiSensorIdoso);
-
-    // Idoso* joao = buscaCallback(idosos,verificaNomeIdoso,"Joao");
-    // listaCallback(getCuidadores(joao), imprimeCuidador);
-    // listaCallback(cuidadores, imprimeIdoso);
+    listaCallback(cuidadores, extraiSensorCuidador);
 
     listaCallback(idosos, liberaIdoso);
     listaCallback(cuidadores, liberaCuidador);

@@ -52,9 +52,13 @@ void adicionaSensorIdoso(Idoso* idoso, Sensor* sensor){
     insereElemento(idoso->sensores, sensor, SENSOR);
 }
 
+void registraFalecimento(Idoso* idoso){
+    liberaIdoso(idoso);
+}
+
 void extraiSensorIdoso(Idoso* idoso){
     char aux[1024];
-    float temperatua_aux = 0.0f;
+    float temperatura_aux = 0.0f;
     float latitude_aux = 0.0f;
     float longitude_aux = 0.0f;
     int queda_aux = 0.0f;
@@ -65,9 +69,13 @@ void extraiSensorIdoso(Idoso* idoso){
     if (file == NULL) {
         return;
     }
-    while (fscanf(file, "%f;%f;%f;%d", &temperatua_aux, &latitude_aux, &longitude_aux, &queda_aux) != EOF){
-        printf("%f\n", temperatua_aux);
-        Sensor* sensor = criaSensor(temperatua_aux,latitude_aux,longitude_aux,queda_aux);
+    while (fscanf (file, "%[^\n]\n", aux) != EOF){
+        if (strcmp(aux,"falecimento") == 0){
+            registraFalecimento(idoso);
+            break;
+        }
+        sscanf(aux, "%f;%f;%f;%d", &temperatura_aux, &latitude_aux, &longitude_aux, &queda_aux);
+        Sensor* sensor = criaSensor(temperatura_aux,latitude_aux,longitude_aux,queda_aux);
         adicionaSensorIdoso(idoso, sensor);
     }
 }
