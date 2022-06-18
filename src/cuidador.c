@@ -36,6 +36,7 @@ void extraiSensorCuidador(Cuidador* cuidador){
         Sensor* sensor = criaSensor(temperatura_aux,latitude_aux,longitude_aux,queda_aux);
         adicionaSensorCuidador(cuidador, sensor);
     }
+  fclose(file);
 }
 
 int verificaNomeCuidador(Cuidador* cuidador, char* nome) {
@@ -49,4 +50,5 @@ void liberaCuidador(Cuidador* cuidador) {
     free(cuidador->nome);
     listaCallback(cuidador->sensores, liberaSensor);
     liberaLista(cuidador->sensores);
+    free(cuidador);
 }

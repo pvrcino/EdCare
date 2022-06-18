@@ -1,4 +1,4 @@
-#include "lhses.h"
+#include "LHSES.h"
 
 struct celula{
     int tipo;

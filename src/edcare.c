@@ -18,6 +18,8 @@ int main(int argc, char *argv[]){
     listaCallback(idosos, liberaIdoso);
     listaCallback(cuidadores, liberaCuidador);
 
+    liberaLista(cuidadores);
+
     liberaLista(idosos);
 
     return EXIT_SUCCESS;
@@ -60,6 +62,7 @@ Lista* constroiListaApoio() {
             strcpy(aux, " ");
         }
     }
+    fclose(apoio);
     return idosos;
 }
 
@@ -104,5 +107,6 @@ Lista* constroiListaCuidadores(Lista* idosos){
             strcpy(aux, " ");
         }
     }
+    fclose(apoio);
     return cuidadores;
 }

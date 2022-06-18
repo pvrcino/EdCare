@@ -53,7 +53,7 @@ void adicionaSensorIdoso(Idoso* idoso, Sensor* sensor){
 }
 
 void registraFalecimento(Idoso* idoso){
-    liberaIdoso(idoso);
+    // liberaIdoso(idoso);
 }
 
 void extraiSensorIdoso(Idoso* idoso){
@@ -78,6 +78,7 @@ void extraiSensorIdoso(Idoso* idoso){
         Sensor* sensor = criaSensor(temperatura_aux,latitude_aux,longitude_aux,queda_aux);
         adicionaSensorIdoso(idoso, sensor);
     }
+  fclose(file);
 }
 
 void liberaIdoso(Idoso* idoso) {
@@ -86,4 +87,5 @@ void liberaIdoso(Idoso* idoso) {
     liberaLista(idoso->cuidadores);
     listaCallback(idoso->sensores, liberaSensor);
     liberaLista(idoso->sensores);
+    free(idoso);
 }
