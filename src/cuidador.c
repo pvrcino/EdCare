@@ -11,20 +11,26 @@ Cuidador* criaCuidador(char* nome){
     cuidador->sensores = criaLista();
 }
 
-void imprimeCuidador(Cuidador* cuidador){
-    printf("%s\n", cuidador->nome);
+char* getNomeCuidador(Cuidador* cuidador){
+     return cuidador->nome;
 }
 
 void adicionaSensorCuidador(Cuidador* cuidador, Sensor* sensor){
     insereElemento(cuidador->sensores, sensor, CUIDADOR);
 }
 
+Sensor* getSensoresCuidador(Cuidador* cuidador){
+    return cuidador->sensores;
+}
+
 void extraiSensorCuidador(Cuidador* cuidador){
     char aux[1024];
+    int leitura = 0;
     float temperatura_aux = 0.0f;
     float latitude_aux = 0.0f;
     float longitude_aux = 0.0f;
     int queda_aux = 0.0f;
+
 
     strcat(strcpy(aux, cuidador->nome), ".txt");
     FILE *file = fopen(aux,"r");
@@ -33,8 +39,9 @@ void extraiSensorCuidador(Cuidador* cuidador){
         return;
     }
     while (fscanf(file, "%f;%f", &latitude_aux, &longitude_aux) != EOF){
-        Sensor* sensor = criaSensor(temperatura_aux,latitude_aux,longitude_aux,queda_aux);
+        Sensor* sensor = criaSensor(leitura,temperatura_aux,latitude_aux,longitude_aux,queda_aux,0);
         adicionaSensorCuidador(cuidador, sensor);
+        leitura += 1;
     }
   fclose(file);
 }

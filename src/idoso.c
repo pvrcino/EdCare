@@ -19,7 +19,6 @@ Lista* getAmigos(Idoso* idoso){
     return idoso->amigos;
 }
 
-
 int verificaNomeIdoso(Idoso* idoso, char* nome) {
     if (strcmp(idoso->nome,nome) == 0){
         return 1;
@@ -33,6 +32,10 @@ char* getNome(Idoso* idoso){
 
 Lista* getCuidadores(Idoso* idoso){
     return idoso->cuidadores;
+}
+
+Lista* getSensores(Idoso* idoso){
+    return idoso->sensores;
 }
 
 void imprimeIdoso(Idoso* idoso){
@@ -56,8 +59,54 @@ void registraFalecimento(Idoso* idoso){
     // liberaIdoso(idoso);
 }
 
+Idoso* getAmigoProximo(Idoso* idoso, int leitura){
+    Sensor* sensorIdoso = buscaCallback(getSensores(idoso), verificaLeitura, leitura);
+    Idoso* proximo = comparaCallback(getAmigos(idoso), comparaDistanciaAmigos, sensorIdoso, leitura);
+    return proximo;
+}
+
+Cuidador* getCuidadorProximo(Idoso* idoso, int leitura){
+    Sensor* sensorIdoso = buscaCallback(getSensores(idoso), verificaLeitura, leitura);
+    Cuidador* proximo = comparaCallback(getCuidadores(idoso), comparaDistanciaCuidador, sensorIdoso, leitura);
+    return proximo;
+}
+
+Idoso* comparaDistanciaAmigos(Sensor* base, Idoso* amigo, Idoso* amigoMaisProximo, int leitura) {
+    Sensor* sensorAmigo = buscaCallback(getSensores(amigo), verificaLeitura, leitura);
+    if (sensorAmigo == NULL) {
+        return 0;
+    }
+    if (isMorto(sensorAmigo)){
+        return 0;
+    }
+    if (amigoMaisProximo == NULL){
+        return 1;
+    }
+    if (distancia(base, sensorAmigo) < distancia(base, buscaCallback(getSensores(amigoMaisProximo), verificaLeitura, leitura))) {
+        return 1;
+    }
+    return 0;
+}
+
+Cuidador* comparaDistanciaCuidador(Sensor* base, Cuidador* cuidador, Cuidador* cuidadorMaisProximo, int leitura) {
+    Sensor* sensorCuidador = buscaCallback(getSensoresCuidador(cuidador), verificaLeitura, leitura);
+    if (sensorCuidador == NULL) {
+        return 0;
+    }
+    if (cuidadorMaisProximo == NULL){
+        return 1;
+    }
+    if (distancia(base, sensorCuidador) < distancia(base, buscaCallback(getSensoresCuidador(cuidadorMaisProximo), verificaLeitura, leitura))) {
+        return 1;
+    }
+    return 0;
+}
+
+
 void extraiSensorIdoso(Idoso* idoso){
     char aux[1024];
+    int leitura = 0;
+    int falecimento = 0;
     float temperatura_aux = 0.0f;
     float latitude_aux = 0.0f;
     float longitude_aux = 0.0f;
@@ -71,12 +120,13 @@ void extraiSensorIdoso(Idoso* idoso){
     }
     while (fscanf (file, "%[^\n]\n", aux) != EOF){
         if (strcmp(aux,"falecimento") == 0){
-            registraFalecimento(idoso);
-            break;
+            falecimento = 1;
+        } else {
+            sscanf(aux, "%f;%f;%f;%d", &temperatura_aux, &latitude_aux, &longitude_aux, &queda_aux);
         }
-        sscanf(aux, "%f;%f;%f;%d", &temperatura_aux, &latitude_aux, &longitude_aux, &queda_aux);
-        Sensor* sensor = criaSensor(temperatura_aux,latitude_aux,longitude_aux,queda_aux);
+        Sensor* sensor = criaSensor(leitura,temperatura_aux,latitude_aux,longitude_aux,queda_aux,falecimento);
         adicionaSensorIdoso(idoso, sensor);
+        leitura += 1;
     }
   fclose(file);
 }

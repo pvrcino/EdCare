@@ -8,5 +8,6 @@
 
 Lista* constroiListaApoio();
 Lista* constroiListaCuidadores();
+int analisaSensores(Idoso* idoso);
 
 #endif

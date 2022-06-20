@@ -22,6 +22,7 @@ void insereElemento(Lista* lista, void*item, int tipo);
 void listaCallback(Lista* lista, void (*callback)(void *));
 int retiraElemento(Lista* lista, void* item);
 void liberaLista(Lista* lista);
-void* buscaCallback(Lista* lista, int (*callback)(void *, char*), char* chave);
+void* buscaCallback(Lista* lista, int (*callback)(void *, void*), void* chave);
+void* comparaCallback(Lista* lista, int (*callback)(void*, void *, void*, int), void* base, int referencia);
 
 #endif

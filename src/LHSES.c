@@ -28,7 +28,7 @@ void listaCallback(Lista* lista, void (*callback)(void *)){
     }
 }
 
-void* buscaCallback(Lista* lista, int (*callback)(void *, char*), char* chave) {
+void* buscaCallback(Lista* lista, int (*callback)(void *, void*), void* chave) {
     Celula* celula = lista->primeiro;
     while (celula != NULL) {
         Celula* prox = celula->prox;
@@ -39,6 +39,21 @@ void* buscaCallback(Lista* lista, int (*callback)(void *, char*), char* chave) {
     }
     return NULL;
 }
+
+void* comparaCallback(Lista* lista, int (*callback)(void*, void *, void*, int), void* base, int referencia) {
+    void* retorno = NULL;
+
+    Celula* celula = lista->primeiro;
+    while (celula != NULL) {
+        Celula* prox = celula->prox;
+        if (callback(base, celula->item, retorno, referencia)) {
+            retorno = celula->item;
+        }
+        celula = prox;
+    }
+    return retorno;
+}
+
 
 void insereElemento(Lista* lista, void*item, int tipo) {
     Celula* celula = malloc(sizeof(Celula));
@@ -56,6 +71,7 @@ void insereElemento(Lista* lista, void*item, int tipo) {
         lista->primeiro = celula;
     }
 }
+
 
 int retira(Lista* lista, void* item) {
     Celula* busca = lista->primeiro;
