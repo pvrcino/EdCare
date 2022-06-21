@@ -12,7 +12,12 @@ int main(int argc, char *argv[]){
     }
 
     Lista* idosos = constroiListaApoio();
+    if (idosos == NULL) {
+        return EXIT_FAILURE;
+    }
+
     Lista* cuidadores = constroiListaCuidadores(idosos);
+
     listaCallback(idosos,extraiSensorIdoso);
     listaCallback(cuidadores, extraiSensorCuidador);
 

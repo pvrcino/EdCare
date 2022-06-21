@@ -19,13 +19,6 @@ Lista* getAmigos(Idoso* idoso){
     return idoso->amigos;
 }
 
-int verificaNomeIdoso(Idoso* idoso, char* nome) {
-    if (strcmp(idoso->nome,nome) == 0){
-        return 1;
-    }
-    return 0;
-}
-
 char* getNome(Idoso* idoso){
     return idoso->nome;
 }
@@ -129,6 +122,13 @@ void extraiSensorIdoso(Idoso* idoso){
         leitura += 1;
     }
   fclose(file);
+}
+
+int verificaNomeIdoso(Idoso* idoso, char* nome) {
+    if (strcmp(idoso->nome,nome) == 0){
+        return 1;
+    }
+    return 0;
 }
 
 void liberaIdoso(Idoso* idoso) {
