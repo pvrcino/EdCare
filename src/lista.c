@@ -1,7 +1,6 @@
-#include "LHSES.h"
+#include "lista.h"
 
 struct celula{
-    int tipo;
     void* item;
     Celula* prox;
 };
@@ -27,6 +26,30 @@ void listaCallback(Lista* lista, void (*callback)(void *)){
         celula = prox;
     }
 }
+
+void listaCallbackBase(Lista* lista, void* base, void (*callback)(void * ,void *)){
+    Celula* celula = lista->primeiro;
+    while (celula != NULL) {
+        Celula* prox = celula->prox;
+        callback(base, celula->item);
+        celula = prox;
+    }
+}
+
+Lista* retiraCallback(Lista* lista, int retirada, int (*callback)(void *, int)){
+    Lista* saida = criaLista();
+    Celula* celula = lista->primeiro;
+    while (celula != NULL) {
+        Celula* prox = celula->prox;
+        if (callback(celula->item, retirada) == 1) {
+            insereElemento(saida, celula->item);
+            retira(lista, celula->item);
+        }
+        celula = prox;
+    }
+    return saida;
+}
+
 
 void* buscaCallback(Lista* lista, int (*callback)(void *, void*), void* chave) {
     Celula* celula = lista->primeiro;
@@ -55,10 +78,9 @@ void* comparaCallback(Lista* lista, int (*callback)(void*, void *, void*, int), 
 }
 
 
-void insereElemento(Lista* lista, void*item, int tipo) {
+void insereElemento(Lista* lista, void*item) {
     Celula* celula = malloc(sizeof(Celula));
     celula->item = item;
-    celula->tipo = tipo;
 
 	if (lista->ultimo){
 		lista->ultimo->prox = celula;
@@ -98,6 +120,15 @@ int retira(Lista* lista, void* item) {
         }
     }
     return 0;
+}
+
+void retiraOutraLista(Lista* lista1, Lista* lista2){
+    Celula* celula = lista2->primeiro;
+    while (celula != NULL) {
+        Celula* prox = celula->prox;
+        retira(lista1, celula->item);
+        celula = prox;
+    }
 }
 
 void liberaLista(Lista* lista) {

@@ -1,105 +1,88 @@
 #include "edcare.h"
 
-int NUMBER_OF_SENSORS = 0;
+struct edcare {
+    Lista* idosos;
+    Lista* cuidadores;
+    int numeroSensores;
+};
 
-int main(int argc, char *argv[]){
+Edcare* inicializaEdcare(int numeroSensores ){
+    Edcare* edcare = malloc(sizeof(Edcare));
+    edcare->idosos = criaLista();
+    edcare->cuidadores = criaLista();
+    edcare->numeroSensores = numeroSensores;
 
-    if (argc < 2) {
-        printf("Insira o numero de sensores: ");
-        scanf("%d",&NUMBER_OF_SENSORS);
-    } else{
-        NUMBER_OF_SENSORS = atoi(argv[1]);
-    }
-
-    Lista* idosos = constroiListaApoio();
-    if (idosos == NULL) {
-        return EXIT_FAILURE;
-    }
-
-    Lista* cuidadores = constroiListaCuidadores(idosos);
-
-    listaCallback(idosos,extraiSensorIdoso);
-    listaCallback(cuidadores, extraiSensorCuidador);
-
-    listaCallback(idosos, analisaSensores);
-
-    listaCallback(idosos, liberaIdoso);
-    listaCallback(cuidadores, liberaCuidador);
-
-    liberaLista(cuidadores);
-
-    liberaLista(idosos);
-
-    return EXIT_SUCCESS;
+    return edcare;
 }
 
-Lista* constroiListaApoio() {
+void inicializaApoio(Edcare* edcare) {
     FILE *apoio = fopen("apoio.txt","r");
-    Lista* idosos = criaLista();
-
     if (apoio == NULL) {
         printf("ARQUIVO DE APOIO NAO ENCONTRADO!");
-        liberaLista(idosos);
-        return NULL;
+        liberaLista(edcare->idosos);
+        exit(EXIT_FAILURE);
     } else {
         char aux[1024];
-        fscanf (apoio, "%[^\n]\n", aux);
+        fscanf (apoio, "%[^\r]%*[\r]", aux);
         char *ptr = strtok(aux, "; ");
 
         while (ptr != NULL){
             Idoso* idoso = criaIdoso(ptr);
-            insereElemento(idosos, idoso, IDOSO);
+            insereElemento(edcare->idosos, idoso);
             ptr = strtok(NULL, "; ");
         }
 
-        while (fscanf (apoio, "%[^\n]\n", aux)) {
-            if (strcmp(aux, " ") == 0) {
+        while (fscanf (apoio, "%[^\r]%*[\r]", aux)) {
+            if (strcmp(aux, " ") == 0 || strcmp(aux, "\n") == 0) {
                 break;
             }
-            char *ptr = strtok(aux, "; ");
-            Idoso* idoso1 = buscaCallback(idosos,verificaNomeIdoso,ptr);
+            char *ptr2 = strtok(aux, "; \n");
 
-            ptr = strtok(NULL, "; ");
-            Idoso* idoso2 = buscaCallback(idosos,verificaNomeIdoso,ptr);
+            Idoso* idoso1 = buscaCallback(edcare->idosos,verificaNomeIdoso,ptr2);
 
-            if (idoso1 == NULL || idoso2 == NULL){
-                printf("%s - IDOSO NAO ENCONTRADO!\n", aux);
-            }
+            ptr2 = strtok(NULL, "; ");
 
+            Idoso* idoso2 = buscaCallback(edcare->idosos,verificaNomeIdoso,ptr2);
             adicionaAmigo(idoso1, idoso2);
             strcpy(aux, " ");
         }
     }
     fclose(apoio);
-    return idosos;
+    return;
 }
 
 
-Lista* constroiListaCuidadores(Lista* idosos){
+void inicializaCuidadores(Edcare* edcare){
     FILE *apoio = fopen("cuidadores.txt","r");
-    Lista* cuidadores = criaLista();
+    Lista* cuidadores = edcare->cuidadores;
+    Lista* idosos = edcare->idosos;
 
     if (apoio == NULL) {
         printf("ARQUIVO DE CUIDADORES NAO ENCONTRADO!");
         liberaLista(cuidadores);
         liberaLista(idosos);
-        return NULL;
+        exit(EXIT_FAILURE);
+        return;
     } else {
         char aux[1024];
-        fscanf (apoio, "%[^\n]\n", aux);
-        char *ptr = strtok(aux, "; ");
+        fscanf (apoio, "%[^\r]%*[\r]", aux);
 
+        char *ptr = strtok(aux, "; ");
         while (ptr != NULL){
             Cuidador* cuidador = criaCuidador(ptr);
-            insereElemento(cuidadores, cuidador, CUIDADOR);
+            insereElemento(cuidadores, cuidador);
             ptr = strtok(NULL, "; ");
         }
 
-        while (fscanf (apoio, "%[^\n]\n", aux)) {
-            if (strcmp(aux, " ") == 0) {
+        while (fscanf (apoio, "%[^\r]%*[\r]", aux)) {
+            if (strcmp(aux, " ") == 0 || strcmp(aux, " ") == '\n') {
                 break;
             }
-            char *ptr = strtok(aux, "; ");
+            char *ptr = strtok(aux, "; \n");
+            if (ptr == NULL) {
+                break;
+            }
+
             Idoso* idoso = buscaCallback(idosos,verificaNomeIdoso,ptr);
             ptr = strtok(NULL, "; ");
 
@@ -116,59 +99,30 @@ Lista* constroiListaCuidadores(Lista* idosos){
         }
     }
     fclose(apoio);
-    return cuidadores;
+    return;
 }
 
-int analisaSensores(Idoso* idoso) {
-    int febresBaixas = 0;
-    char* aux[1024];
-    strcat(strcpy(aux, getNome(idoso)), "-saida.txt");
-    FILE *file = fopen(aux,"a");
-    for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
-        Sensor* s = buscaCallback(getSensores(idoso), verificaLeitura, i);
-        if (s == NULL){
-            break;
-        }
-        if (isMorto(s)) {
-            fprintf(file, "falecimento\n");
-            fclose(file);
-            return 1;
-        }
-        if (getQueda(s)) {
-            Cuidador* c = getCuidadorProximo(idoso, i);
-            if (c == NULL){
-                fprintf(file, "Queda mas, infelizmente, o idoso está sem cuidadores na rede\n");
-            } else{
-                fprintf(file, "queda, acionou %s\n", getNomeCuidador(c));
-            }
-        }else if (getTemperatura(s) >= 38){
-            Cuidador* c = getCuidadorProximo(idoso, i);
-            febresBaixas = 0;
-            if (c == NULL){
-                fprintf(file, "Febre alta mas, infelizmente, o idoso está sem cuidadores na rede\n");
-            } else{
-                fprintf(file, "febre alta, acionou %s\n", getNomeCuidador(c));
-            }
-        }else if (getTemperatura(s) > 37) {
-            febresBaixas += 1;
-            if (febresBaixas >= 4) {
-                Cuidador* c = getCuidadorProximo(idoso, i);
-                if (c == NULL){
-                    fprintf(file, "Febre baixa pela quarta vez mas, infelizmente, o idoso está sem cuidadores na rede\n");
-                } else{
-                    fprintf(file, "febre baixa pela quarta vez, acionou %s\n", getNomeCuidador(c));
-                }
-            } else {
-                Idoso* amigo = getAmigoProximo(idoso, i);
-                if (amigo == NULL){
-                    fprintf(file, "Febre baixa mas, infelizmente, o idoso está sem amigos na rede\n");
-                } else{
-                    fprintf(file, "febre baixa, acionou amigo %s\n", getNome(amigo));
-                }
-            }
-        } else {
-            fprintf(file, "tudo ok\n");
-        }
+void extraiSensores(Edcare* edcare){
+    listaCallback(edcare->idosos,extraiSensorIdoso);
+    listaCallback(edcare->cuidadores, extraiSensorCuidador);
+}
+
+void analisaSensores(Edcare* edcare){
+    for (int i = 0; i < edcare->numeroSensores; i++) {
+        Lista* falecidos = retiraCallback(edcare->idosos, i, analisaSensorIdoso);
+        retiraOutraLista(edcare->idosos,falecidos);
+        listaCallback(falecidos, registraFalecimento);
+        liberaLista(falecidos);
     }
-    fclose(file);
+}
+
+void finalizaEdcare(Edcare* edcare){
+    listaCallback(edcare->idosos, liberaIdoso);
+    listaCallback(edcare->cuidadores, liberaCuidador);
+
+    liberaLista(edcare->cuidadores);
+
+    liberaLista(edcare->idosos);
+
+    free(edcare);
 }
